@@ -17,3 +17,10 @@ lo echa del canal
 
 ##!bananero
 reproduce un sonido random del bananero
+
+# Heroku dependencies
+
+Add the following buildpacks to the heroku app:
+
+- https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest
+- https://github.com/xrisk/heroku-opus

@@ -9,10 +9,9 @@ from src.utils.fileQueue import FileQueue
 
 
 # TODO: add validation in all commands to check that the user is in the same voicechat as the bot
-# TODO: add validation in all commands to check that the bot is a voicechat
+# TODO: add validation in all commands to check that the bot is in a voicechat
 # TODO: add help description for commands
 # TODO: add youtube searching to play command
-# TODO: deploy
 # TODO: check multithreading
 
 
