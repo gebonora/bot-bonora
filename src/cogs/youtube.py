@@ -76,6 +76,13 @@ class Youtube(commands.Cog, name="Youtube"):
     async def queue_info(self, ctx):
         await ctx.send('Queue size: {}'.format(self.file_queue.size()))
 
+    @commands.command(name='erase')
+    async def erase(self, ctx):
+        voice_client = self.get_voice_client(ctx)
+        voice_client.pause()
+        self.file_queue.clear()
+        await ctx.send("Queue cleared!")
+
     async def start_music(self, ctx):
         voice_client = self.get_voice_client(ctx)
         filename = self.file_queue.get_next()

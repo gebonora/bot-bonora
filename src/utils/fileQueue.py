@@ -22,7 +22,7 @@ class FileQueue:
         return self.data.pop(0)  # queue definition XD
 
     def clear(self):
-        folder = '/downloaded'
+        folder = 'downloaded'
         for filename in os.listdir(folder):
             file_path = os.path.join(folder, filename)
             try:
