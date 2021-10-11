@@ -8,6 +8,13 @@ from src.utils.mediaplayer import MediaPlayer
 from src.utils.fileQueue import FileQueue
 
 
+# TODO: add validation in all commands to check that the user is in the same voicechat as the bot
+# TODO: add validation in all commands to check that the bot is a voicechat
+# TODO: add help description for commands
+# TODO: add youtube searching to play command
+# TODO: deploy
+# TODO: check multithreading
+
 class Youtube(commands.Cog, name="Youtube"):
 
     def __init__(self, bot, file_queue):
