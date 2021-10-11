@@ -7,6 +7,7 @@ import youtube_dl
 class MediaPlayer(discord.PCMVolumeTransformer):
     ytdl_format_options = {
         'format': 'bestaudio/best',
+        'outtmpl': 'downloaded/%(extractor_key)s/%(extractor)s-%(id)s-%(title)s.%(ext)s',
         'restrictfilenames': True,
         'noplaylist': True,
         'nocheckcertificate': True,
