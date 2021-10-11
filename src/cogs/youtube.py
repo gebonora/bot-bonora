@@ -13,13 +13,10 @@ class Youtube(commands.Cog, name="Youtube"):
     async def play_music(self, ctx, url):
         print("Received URL " + url)
 
+        server = ctx.message.guild
+        await self.join(ctx)
+        voice_channel = server.voice_client
         try:
-
-            server = ctx.message.guild
-            await self.join(ctx)
-
-            voice_channel = server.voice_client
-
             async with ctx.typing():
                 filename = await MediaPlayer.from_url(url, loop=False)
                 voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename))
@@ -32,9 +29,11 @@ class Youtube(commands.Cog, name="Youtube"):
         if not ctx.message.author.voice:
             await ctx.send("{} conectate al canal bro".format(ctx.message.author.name))
             return
-        else:
+        try:
             channel = ctx.message.author.voice.channel
-        await channel.connect()
+            await channel.connect()
+        except Exception as e:
+            print(e)
 
 
 def setup(bot):

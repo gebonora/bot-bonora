@@ -13,7 +13,14 @@ class Bananero(commands.Cog, name="Bananero"):
         "Que telaraña, tela-chupo!",
         "Ayy saliste putazo como la abuela!",
         "Apurate Harry que la negra nos hace dos por uno",
-        "Sapeeeeeee"
+        "Sapeeeeeee",
+        "La paraste de pecho colorado",
+        "Tirame la goma, kagasawa!",
+        "Anda a hacerte cojer, chino",
+        "Chino alcahuete",
+        "Negro de mierda, te pedi que me trajeras, mucha-chota, no muchachita!",
+        "El profe se la comeeeee",
+        "Caperucita, como lokita!",
     ]
 
     def __init__(self, bot):
@@ -32,7 +39,9 @@ class Bananero(commands.Cog, name="Bananero"):
 
     @staticmethod
     def get_message(author):
-        if random.random() < 0.5:
+        if random.random() < 0.1:
+            return f'{author} estás como súper lokita, amante del pedazo!!!'
+        if random.random() < 0.55:
             return f'Efectivamente {author}, estás como lokita!!'
         else:
             return f'Me informan que {author} NO está como lokita'
