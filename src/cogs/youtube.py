@@ -61,6 +61,13 @@ class Youtube(commands.Cog, name="Youtube"):
         voice_client.resume()
         self.paused_by_command = False
 
+    @commands.command(name='skip')
+    async def skip(self, ctx):
+        voice_client = self.get_voice_client(ctx)
+        voice_client.pause()
+        await ctx.send("Skipping song...")
+        self.check_queue(ctx)
+
     @commands.command(name='queue_info')
     async def queue_info(self, ctx):
         await ctx.send('Queue size: {}'.format(self.file_queue.size()))
@@ -79,6 +86,7 @@ class Youtube(commands.Cog, name="Youtube"):
             filename = self.file_queue.get_next()
             voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                               after=lambda x: self.check_queue(ctx))
+        else:
             asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
 
     def get_server(self, ctx):
