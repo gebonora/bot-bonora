@@ -13,7 +13,7 @@ class Youtube(commands.Cog, name="Youtube"):
     def __init__(self, bot, file_queue):
         self.bot = bot
         self.file_queue = file_queue
-        self.isPlaying = False
+        self.paused_by_command = False
 
     @commands.command(name='play')
     async def play_music(self, ctx, url):
@@ -46,7 +46,20 @@ class Youtube(commands.Cog, name="Youtube"):
     @commands.command(name='pause')
     async def pause(self, ctx):
         voice_client = self.get_voice_client(ctx)
-        voice_client.pause()
+        if voice_client.is_playing():
+            voice_client.pause()
+            self.paused_by_command = True
+            await ctx.send("Paused by {}".format(ctx.message.author.name))
+            return
+        await ctx.send("There is nothing playing to pause")
+
+    @commands.command(name='continue')
+    async def continue_playing(self, ctx):
+        voice_client = self.get_voice_client(ctx)
+        if not self.paused_by_command:
+            return
+        voice_client.resume()
+        self.paused_by_command = False
 
     @commands.command(name='queue_info')
     async def queue_info(self, ctx):
@@ -67,7 +80,6 @@ class Youtube(commands.Cog, name="Youtube"):
             voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                               after=lambda x: self.check_queue(ctx))
             asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
-        print("NO MORE MUSIC")
 
     def get_server(self, ctx):
         return ctx.message.guild
