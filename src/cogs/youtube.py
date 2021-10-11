@@ -16,7 +16,12 @@ class Youtube(commands.Cog, name="Youtube"):
         self.paused_by_command = False
 
     @commands.command(name='play')
-    async def play_music(self, ctx, url):
+    async def play_music(self, ctx, *args):
+        if not args:
+            await self.continue_playing(ctx)
+            return
+
+        url = args[0]
         print("Received URL " + url)
 
         server = self.get_server(ctx)
@@ -53,7 +58,6 @@ class Youtube(commands.Cog, name="Youtube"):
             return
         await ctx.send("There is nothing playing to pause")
 
-    @commands.command(name='continue')
     async def continue_playing(self, ctx):
         voice_client = self.get_voice_client(ctx)
         if not self.paused_by_command:

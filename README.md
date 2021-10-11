@@ -9,7 +9,7 @@ pasa a reproducir el siguiente de la queue
 ## !erase
 borra la queue
 
-## !stop
+## !pause
 detiene la reproduccion
 
 ## !leave
