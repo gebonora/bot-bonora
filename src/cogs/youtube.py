@@ -13,6 +13,7 @@ from src.utils.fileQueue import FileQueue
 # TODO: add help description for commands
 # TODO: add youtube searching to play command
 # TODO: check multithreading
+# TODO: disconnect after X amount of time
 
 
 class Youtube(commands.Cog, name="Youtube"):
