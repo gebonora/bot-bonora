@@ -1,4 +1,5 @@
 import asyncio
+from time import sleep
 
 import discord
 from discord.ext import commands
@@ -7,12 +8,9 @@ from src.utils.mediaplayer import MediaPlayer
 
 from src.utils.fileQueue import FileQueue
 
-# TODO: add validation in all commands to check that the user is in the same voicechat as the bot DONE
-# TODO: add validation in all commands to check that the bot is in a voicechat DONE
 # TODO: add help description for commands
 # TODO: add youtube searching to play command
-# TODO: check multithreading
-# TODO: disconnect after X amount of time
+
 
 SAME_CHANNEL_MESSAGE = "tenés que estar en el mismo canal que el bot para enviar el comando"
 NO_CHANNEL_MESSAGE = "conectate a un canal bro"
@@ -25,7 +23,7 @@ class Youtube(commands.Cog, name="Youtube"):
         self.file_queue = file_queue
         self.paused_by_command = False
 
-    @commands.command(name='play')
+    @commands.command(name='play', aliases=['p'])
     async def play_music(self, ctx, *args):
         if not ctx.message.author.voice:
             await ctx.send("{} {}".format(ctx.message.author.nick, NO_CHANNEL_MESSAGE))
@@ -74,7 +72,7 @@ class Youtube(commands.Cog, name="Youtube"):
             return
         await ctx.send("There is nothing playing to pause")
 
-    @commands.command(name='skip')
+    @commands.command(name='skip', aliases=['s'])
     async def skip(self, ctx):
         if not self.is_bot_and_author_in_same_channel(ctx):
             await ctx.send("{} {}".format(ctx.message.author.nick, SAME_CHANNEL_MESSAGE))
@@ -117,13 +115,16 @@ class Youtube(commands.Cog, name="Youtube"):
 
     def check_queue(self, ctx):
         print("CHECKING QUEUE:")
+        voice_client = self.get_voice_client(ctx)
         if not self.file_queue.is_empty():
-            voice_client = self.get_voice_client(ctx)
             filename = self.file_queue.get_next()
             voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                               after=lambda x: self.check_queue(ctx))
         else:
-            asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
+            sleep(25)
+            if voice_client and not voice_client.is_playing():
+                asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
+                asyncio.run_coroutine_threadsafe(voice_client.disconnect(), self.bot.loop)
 
     def get_server(self, ctx):
         return ctx.message.guild
