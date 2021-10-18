@@ -6,10 +6,10 @@ from src.utils.mediaplayer import MediaPlayer
 
 
 class FileQueue:
-    '''
+    """
     We will feed this queue object with youtube URLs,
     download the audio and store in the array 'data' the filenames so we can reproduce
-    '''
+    """
 
     def __init__(self):
         self.data = []

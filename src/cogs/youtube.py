@@ -7,13 +7,15 @@ from src.utils.mediaplayer import MediaPlayer
 
 from src.utils.fileQueue import FileQueue
 
-
-# TODO: add validation in all commands to check that the user is in the same voicechat as the bot
-# TODO: add validation in all commands to check that the bot is in a voicechat
+# TODO: add validation in all commands to check that the user is in the same voicechat as the bot DONE
+# TODO: add validation in all commands to check that the bot is in a voicechat DONE
 # TODO: add help description for commands
 # TODO: add youtube searching to play command
 # TODO: check multithreading
 # TODO: disconnect after X amount of time
+
+SAME_CHANNEL_MESSAGE = "tenés que estar en el mismo canal que el bot para enviar el comando"
+NO_CHANNEL_MESSAGE = "conectate a un canal bro"
 
 
 class Youtube(commands.Cog, name="Youtube"):
@@ -25,6 +27,9 @@ class Youtube(commands.Cog, name="Youtube"):
 
     @commands.command(name='play')
     async def play_music(self, ctx, *args):
+        if not ctx.message.author.voice:
+            await ctx.send("{} {}".format(ctx.message.author.nick, NO_CHANNEL_MESSAGE))
+            return
         if not args:
             await self.continue_playing(ctx)
             return
@@ -48,7 +53,7 @@ class Youtube(commands.Cog, name="Youtube"):
     @commands.command(name='join')
     async def join(self, ctx):
         if not ctx.message.author.voice:
-            await ctx.send("{} conectate al canal bro".format(ctx.message.author.name))
+            await ctx.send("{} conectate a un canal bro".format(ctx.message.author.nick))
             return
         try:
             channel = ctx.message.author.voice.channel
@@ -58,23 +63,22 @@ class Youtube(commands.Cog, name="Youtube"):
 
     @commands.command(name='pause')
     async def pause(self, ctx):
+        if not self.is_bot_and_author_in_same_channel(ctx):
+            await ctx.send("{} {}".format(ctx.message.author.nick, SAME_CHANNEL_MESSAGE))
+            return
         voice_client = self.get_voice_client(ctx)
         if voice_client.is_playing():
             voice_client.pause()
             self.paused_by_command = True
-            await ctx.send("Paused by {}".format(ctx.message.author.name))
+            await ctx.send("Paused by {}".format(ctx.message.author.nick))
             return
         await ctx.send("There is nothing playing to pause")
 
-    async def continue_playing(self, ctx):
-        voice_client = self.get_voice_client(ctx)
-        if not self.paused_by_command:
-            return
-        voice_client.resume()
-        self.paused_by_command = False
-
     @commands.command(name='skip')
     async def skip(self, ctx):
+        if not self.is_bot_and_author_in_same_channel(ctx):
+            await ctx.send("{} {}".format(ctx.message.author.nick, SAME_CHANNEL_MESSAGE))
+            return
         voice_client = self.get_voice_client(ctx)
         voice_client.pause()
         await ctx.send("Skipping song...")
@@ -86,9 +90,15 @@ class Youtube(commands.Cog, name="Youtube"):
 
     @commands.command(name='erase')
     async def erase(self, ctx):
+        if not self.is_bot_and_author_in_same_channel(ctx):
+            await ctx.send("{} {}".format(ctx.message.author.nick, SAME_CHANNEL_MESSAGE))
+            return
         voice_client = self.get_voice_client(ctx)
         voice_client.pause()
-        self.file_queue.clear()
+        try:
+            self.file_queue.clear()
+        except Exception as e:
+            print(e)
         await ctx.send("Queue cleared!")
 
     async def start_music(self, ctx):
@@ -97,6 +107,13 @@ class Youtube(commands.Cog, name="Youtube"):
         voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                           after=lambda x: self.check_queue(ctx))
         await ctx.send('**Now playing:** {}'.format(filename))
+
+    async def continue_playing(self, ctx):
+        voice_client = self.get_voice_client(ctx)
+        if not self.paused_by_command:
+            return
+        voice_client.resume()
+        self.paused_by_command = False
 
     def check_queue(self, ctx):
         print("CHECKING QUEUE:")
@@ -113,6 +130,11 @@ class Youtube(commands.Cog, name="Youtube"):
 
     def get_voice_client(self, ctx):
         return self.get_server(ctx).voice_client
+
+    def is_bot_and_author_in_same_channel(self, ctx):
+        author_voice = ctx.message.author.voice
+        bot_voice = self.get_voice_client(ctx)
+        return author_voice and bot_voice and author_voice.channel == bot_voice.channel
 
 
 def setup(bot):
