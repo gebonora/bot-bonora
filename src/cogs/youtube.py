@@ -10,6 +10,7 @@ from src.utils.fileQueue import FileQueue
 
 # TODO: add help description for commands
 # TODO: add youtube searching to play command
+# TODO: add descriptive playing messages and queue info -> refactor queue to save video title instead of only pathname
 
 
 SAME_CHANNEL_MESSAGE = "tenés que estar en el mismo canal que el bot para enviar el comando"
