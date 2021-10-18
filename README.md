@@ -1,22 +1,26 @@
-##!p o !play
-si recibe youtube url, pone la queue eso
-else busca un video en youtube por el string y pone en la queue
-pone a reproducir el primero si no hay args 
+# Run
+Use Python3 to run bot.py
+a .env with a bot 'discord_token' is needed
+
+## !p o !play
+- If URL sent, enqueues and plays it
+- Else if text is sent, searches for it, enqueues and plays it
+- Resumes playing of queue
 
 ## !s o !skip
-pasa a reproducir el siguiente de la queue
+- Skips to the next queue entry
 
 ## !erase
-borra la queue
+- Deletes queue and all downloaded files
 
 ## !pause
-detiene la reproduccion
+- Pauses
 
 ## !leave
-lo echa del canal
+- Removes bot from voice channel
 
-##!bananero
-reproduce un sonido random del bananero
+## !join
+- Adds bot to voice channel
 
 # Heroku dependencies
 

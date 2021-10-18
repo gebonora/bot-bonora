@@ -51,11 +51,21 @@ class Youtube(commands.Cog, name="Youtube"):
     @commands.command(name='join')
     async def join(self, ctx):
         if not ctx.message.author.voice:
-            await ctx.send("{} conectate a un canal bro".format(ctx.message.author.nick))
+            await ctx.send("{} {}".format(ctx.message.author.nick, NO_CHANNEL_MESSAGE))
             return
         try:
             channel = ctx.message.author.voice.channel
             await channel.connect()
+        except Exception as e:
+            print(e)
+
+    @commands.command(name='leave')
+    async def leave(self, ctx):
+        if not ctx.message.author.voice:
+            await ctx.send("{} {}".format(ctx.message.author.nick, NO_CHANNEL_MESSAGE))
+            return
+        try:
+            await self.get_voice_client(ctx).disconnect()
         except Exception as e:
             print(e)
 
