@@ -7,7 +7,7 @@ An .env file with a bot 'discord_token' is needed
 - Searches Youtube for $song, adds the first found to the queue
 - Starts or resumes playing of queue
 
-*Example:* `!p 1979 mashing pumpkins`
+*Example:* `!p 1979 smashing pumpkins`
 
 ## !s or !skip
 - Skips to the next queue entry
