@@ -8,13 +8,12 @@ from src.utils.mediaplayer import MediaPlayer
 
 from src.utils.fileQueue import FileQueue
 
-# TODO: add help description for commands
-# TODO: add youtube searching to play command DONE
-# TODO: add descriptive playing messages and queue info -> refactor queue to save video title instead of only pathname DONE
+# TODO: think about more features
 
 
 SAME_CHANNEL_MESSAGE = "tenés que estar en el mismo canal que el bot para enviar el comando"
 NO_CHANNEL_MESSAGE = "conectate a un canal bro"
+TIMEOUT_SECONDS = 45
 
 
 class Youtube(commands.Cog, name="Youtube"):
@@ -32,10 +31,7 @@ class Youtube(commands.Cog, name="Youtube"):
         if not args:
             await self.continue_playing(ctx)
             return
-        print('Received args: {}'.format(args))
         url = " ".join(args)
-        print('Searching for: {}'.format(url))
-
         server = self.get_server(ctx)
         await self.join(ctx)
         voice_client = self.get_voice_client(ctx)
@@ -62,8 +58,8 @@ class Youtube(commands.Cog, name="Youtube"):
 
     @commands.command(name='leave')
     async def leave(self, ctx):
-        if not ctx.message.author.voice:
-            await ctx.send("{} {}".format(ctx.message.author.nick, NO_CHANNEL_MESSAGE))
+        if not self.is_bot_and_author_in_same_channel(ctx):
+            await ctx.send("{} {}".format(ctx.message.author.nick, SAME_CHANNEL_MESSAGE))
             return
         try:
             await self.get_voice_client(ctx).disconnect()
@@ -126,8 +122,6 @@ class Youtube(commands.Cog, name="Youtube"):
         self.paused_by_command = False
 
     def check_queue(self, ctx):
-        print("CHECKING QUEUE:")
-        print(self.file_queue.get_queue_info())
         voice_client = self.get_voice_client(ctx)
         if not self.file_queue.is_empty():
             video = self.file_queue.get_next()
@@ -136,12 +130,13 @@ class Youtube(commands.Cog, name="Youtube"):
                               after=lambda x: self.check_queue(ctx))
             asyncio.run_coroutine_threadsafe(ctx.send(self.get_playing_message(video)), self.bot.loop)
         else:
-            sleep(25)
+            sleep(TIMEOUT_SECONDS)
             if voice_client and not voice_client.is_playing():
                 asyncio.run_coroutine_threadsafe(ctx.send("*No more songs in queue... Adiós!*"), self.bot.loop)
                 asyncio.run_coroutine_threadsafe(voice_client.disconnect(), self.bot.loop)
 
-    def get_server(self, ctx):
+    @staticmethod
+    def get_server(ctx):
         return ctx.message.guild
 
     def get_voice_client(self, ctx):
@@ -152,7 +147,8 @@ class Youtube(commands.Cog, name="Youtube"):
         bot_voice = self.get_voice_client(ctx)
         return author_voice and bot_voice and author_voice.channel == bot_voice.channel
 
-    def get_playing_message(self, video):
+    @staticmethod
+    def get_playing_message(video):
         return '**\U0001F3B6 Now playing \U0001F3B6**\n{}'.format(video.get_info())
 
 
