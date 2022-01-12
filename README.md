@@ -1,13 +1,15 @@
 # Run
 Use Python3 to run bot.py
-a .env with a bot 'discord_token' is needed
 
-## !p o !play
-- If URL sent, enqueues and plays it
-- Else if text is sent, searches for it, enqueues and plays it
-- Resumes playing of queue
+An .env file with a bot 'discord_token' is needed
 
-## !s o !skip
+## !p or !play $song
+- Searches Youtube for $song, adds the first found to the queue
+- Starts or resumes playing of queue
+
+*Example:* `!p 1979 mashing pumpkins`
+
+## !s or !skip
 - Skips to the next queue entry
 
 ## !erase
