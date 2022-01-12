@@ -9,4 +9,4 @@ class DownloadedVideo:
     url: str
 
     def get_info(self):
-        return '{}\nDuration: {}s\nUrl: {}'.format(self.title, self.duration, self.url)
+        return '`Title`: {}\n`Duration`: {}s\n`Url`: {}'.format(self.title, self.duration, self.url)

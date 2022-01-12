@@ -9,8 +9,8 @@ from src.utils.mediaplayer import MediaPlayer
 from src.utils.fileQueue import FileQueue
 
 # TODO: add help description for commands
-# TODO: add youtube searching to play command
-# TODO: add descriptive playing messages and queue info -> refactor queue to save video title instead of only pathname
+# TODO: add youtube searching to play command DONE
+# TODO: add descriptive playing messages and queue info -> refactor queue to save video title instead of only pathname DONE
 
 
 SAME_CHANNEL_MESSAGE = "tenés que estar en el mismo canal que el bot para enviar el comando"
@@ -42,8 +42,8 @@ class Youtube(commands.Cog, name="Youtube"):
 
         try:
             async with ctx.typing():
-                await self.file_queue.add_url(url)
-                await ctx.send("Song added to queue: {}".format(url)) #TODO: mejorar el logeo
+                title = await self.file_queue.add_url(url)
+                await ctx.send("**Song added to queue:** {}".format(title))
             if not voice_client.is_playing():
                 await self.start_music(ctx)
         except Exception as e:
@@ -90,12 +90,12 @@ class Youtube(commands.Cog, name="Youtube"):
             return
         voice_client = self.get_voice_client(ctx)
         voice_client.pause()
-        await ctx.send("Skipping song...")
+        await ctx.send("*Song skipped*")
         self.check_queue(ctx)
 
     @commands.command(name='queue_info')
     async def queue_info(self, ctx):
-        await ctx.send('Queue size: {}'.format(self.file_queue.size()))
+        await ctx.send(self.file_queue.get_queue_info())
 
     @commands.command(name='erase')
     async def erase(self, ctx):
@@ -108,7 +108,7 @@ class Youtube(commands.Cog, name="Youtube"):
             self.file_queue.clear()
         except Exception as e:
             print(e)
-        await ctx.send("Queue cleared!")
+        await ctx.send("**Queue cleared!**")
 
     async def start_music(self, ctx):
         voice_client = self.get_voice_client(ctx)
@@ -116,7 +116,7 @@ class Youtube(commands.Cog, name="Youtube"):
         filename = video.filename
         voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                           after=lambda x: self.check_queue(ctx))
-        await ctx.send('**Now playing:** {}'.format(video.get_info()))
+        await ctx.send(self.get_playing_message(video))
 
     async def continue_playing(self, ctx):
         voice_client = self.get_voice_client(ctx)
@@ -127,16 +127,18 @@ class Youtube(commands.Cog, name="Youtube"):
 
     def check_queue(self, ctx):
         print("CHECKING QUEUE:")
+        print(self.file_queue.get_queue_info())
         voice_client = self.get_voice_client(ctx)
         if not self.file_queue.is_empty():
             video = self.file_queue.get_next()
             filename = video.filename
             voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                               after=lambda x: self.check_queue(ctx))
+            asyncio.run_coroutine_threadsafe(ctx.send(self.get_playing_message(video)), self.bot.loop)
         else:
             sleep(25)
             if voice_client and not voice_client.is_playing():
-                asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
+                asyncio.run_coroutine_threadsafe(ctx.send("*No more songs in queue... Adiós!*"), self.bot.loop)
                 asyncio.run_coroutine_threadsafe(voice_client.disconnect(), self.bot.loop)
 
     def get_server(self, ctx):
@@ -149,6 +151,9 @@ class Youtube(commands.Cog, name="Youtube"):
         author_voice = ctx.message.author.voice
         bot_voice = self.get_voice_client(ctx)
         return author_voice and bot_voice and author_voice.channel == bot_voice.channel
+
+    def get_playing_message(self, video):
+        return '**\U0001F3B6 Now playing \U0001F3B6**\n{}'.format(video.get_info())
 
 
 def setup(bot):

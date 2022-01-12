@@ -17,6 +17,7 @@ class FileQueue:
     async def add_url(self, url: string):
         video = await MediaPlayer.from_url(url, loop=False)
         self.data.append(video)
+        return video.title
 
     def get_next(self):
         return self.data.pop(0)  # queue definition XD
@@ -39,3 +40,9 @@ class FileQueue:
 
     def size(self):
         return len(self.data)
+
+    def get_queue_info(self):
+        if self.is_empty():
+            return "**Queue is empty**"
+        songs = "\n".join(map(lambda x: x.title, self.data))
+        return '**{} songs in queue:**\n{}'.format(self.size(), songs)
