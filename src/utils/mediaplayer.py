@@ -3,6 +3,8 @@ import asyncio
 import discord
 import youtube_dl
 
+from src.utils.downloadedVideo import DownloadedVideo
+
 
 class MediaPlayer(discord.PCMVolumeTransformer):
     ytdl_format_options = {
@@ -34,4 +36,4 @@ class MediaPlayer(discord.PCMVolumeTransformer):
             # take first item from a playlist
             data = data['entries'][0]
         filename = data['title'] if stream else cls.ytdl.prepare_filename(data)
-        return filename
+        return DownloadedVideo(data['title'], filename, data['duration'], data['webpage_url'])

@@ -32,9 +32,9 @@ class Youtube(commands.Cog, name="Youtube"):
         if not args:
             await self.continue_playing(ctx)
             return
-
-        url = args[0]
-        print("Received URL " + url)
+        print('Received args: {}'.format(args))
+        url = " ".join(args)
+        print('Searching for: {}'.format(url))
 
         server = self.get_server(ctx)
         await self.join(ctx)
@@ -43,7 +43,7 @@ class Youtube(commands.Cog, name="Youtube"):
         try:
             async with ctx.typing():
                 await self.file_queue.add_url(url)
-                await ctx.send("Song added to queue: {}".format(url))
+                await ctx.send("Song added to queue: {}".format(url)) #TODO: mejorar el logeo
             if not voice_client.is_playing():
                 await self.start_music(ctx)
         except Exception as e:
@@ -112,10 +112,11 @@ class Youtube(commands.Cog, name="Youtube"):
 
     async def start_music(self, ctx):
         voice_client = self.get_voice_client(ctx)
-        filename = self.file_queue.get_next()
+        video = self.file_queue.get_next()
+        filename = video.filename
         voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                           after=lambda x: self.check_queue(ctx))
-        await ctx.send('**Now playing:** {}'.format(filename))
+        await ctx.send('**Now playing:** {}'.format(video.get_info()))
 
     async def continue_playing(self, ctx):
         voice_client = self.get_voice_client(ctx)
@@ -128,7 +129,8 @@ class Youtube(commands.Cog, name="Youtube"):
         print("CHECKING QUEUE:")
         voice_client = self.get_voice_client(ctx)
         if not self.file_queue.is_empty():
-            filename = self.file_queue.get_next()
+            video = self.file_queue.get_next()
+            filename = video.filename
             voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=filename),
                               after=lambda x: self.check_queue(ctx))
         else:

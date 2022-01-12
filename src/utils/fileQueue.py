@@ -15,8 +15,8 @@ class FileQueue:
         self.data = []
 
     async def add_url(self, url: string):
-        filename = await MediaPlayer.from_url(url, loop=False)
-        self.data.append(filename)
+        video = await MediaPlayer.from_url(url, loop=False)
+        self.data.append(video)
 
     def get_next(self):
         return self.data.pop(0)  # queue definition XD
