@@ -13,7 +13,7 @@ from src.utils.fileQueue import FileQueue
 
 SAME_CHANNEL_MESSAGE = "tenés que estar en el mismo canal que el bot para enviar el comando"
 NO_CHANNEL_MESSAGE = "conectate a un canal bro"
-TIMEOUT_SECONDS = 45
+TIMEOUT_SECONDS = 300
 
 
 class Youtube(commands.Cog, name="Youtube"):
