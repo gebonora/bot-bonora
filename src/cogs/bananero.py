@@ -21,6 +21,7 @@ class Bananero(commands.Cog, name="Bananero"):
         "Negro de mierda, te pedi que me trajeras, mucha-chota, no muchachita!",
         "El profe se la comeeeee",
         "Caperucita, como lokita!",
+        "Conoces al doctor Mengueche?"
     ]
 
     def __init__(self, bot):
